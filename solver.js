@@ -10,6 +10,7 @@ function Solver(settings, maze) {
     this.lastDirection = '';
     this.repeateSpeed = 70;
     this.eventHandlers = [];
+    this.currentCell = undefined;
 
     this.activate = function () {
         if (this.isActive) {
@@ -17,7 +18,7 @@ function Solver(settings, maze) {
         }
         console.log('activating solver');
         this.isActive = true;
-        this.maze.solverCurrentCell = this.maze.startCell;
+        this.currentCell = this.maze.startCell;
         this.addEvent('keydown', this.keyDownHandler.bind(this));
         this.addEvent('keyup', this.keyUpHandler.bind(this));
         this.addEvent('touchstart', this.touchHandler.bind(this));
@@ -28,24 +29,24 @@ function Solver(settings, maze) {
     this.reset = function () {
         console.log('resetting solver');
         this.isActive = false;
-        this.maze.solverCurrentCell = undefined;
+        this.currentCell = undefined;
         this.direction = '';
         this.removeEvents();
     }
 
-    this.addEvent = function(type, listener) {
+    this.addEvent = function (type, listener) {
         window.addEventListener(type, listener, false);
-        this.eventHandlers.push({type: type, listener: listener});
+        this.eventHandlers.push({ type: type, listener: listener });
     }
 
-    this.removeEvents = function() {
-        for(var i = 0; i < this.eventHandlers.length; i++) {
+    this.removeEvents = function () {
+        for (var i = 0; i < this.eventHandlers.length; i++) {
             window.removeEventListener(this.eventHandlers[i].type, this.eventHandlers[i].listener, false);
         }
         this.eventHandlers.length = 0;
     }
 
-    
+
 
     // Get the position of a touch relative to the canvas
     this.touchHandler = function (event) {
@@ -113,27 +114,40 @@ function Solver(settings, maze) {
         }
 
         if (this.direction === 'n') {
-            if (!this.maze.solverCurrentCell.topWall) {
-                this.maze.solverCurrentCell = this.maze.cells[this.maze.solverCurrentCell.row - 1][this.maze.solverCurrentCell.col];
+            if (!this.currentCell.topWall) {
+                this.currentCell = this.maze.cells[this.currentCell.row - 1][this.currentCell.col];
             }
         }
         if (this.direction === 'e') {
-            if (!this.maze.solverCurrentCell.rightWall) {
-                this.maze.solverCurrentCell = this.maze.cells[this.maze.solverCurrentCell.row][this.maze.solverCurrentCell.col + 1];
+            if (!this.currentCell.rightWall) {
+                this.currentCell = this.maze.cells[this.currentCell.row][this.currentCell.col + 1];
             }
         }
         if (this.direction === 's') {
-            if (!this.maze.solverCurrentCell.bottomWall) {
-                this.maze.solverCurrentCell = this.maze.cells[this.maze.solverCurrentCell.row + 1][this.maze.solverCurrentCell.col];
+            if (!this.currentCell.bottomWall) {
+                this.currentCell = this.maze.cells[this.currentCell.row + 1][this.currentCell.col];
             }
         }
         if (this.direction === 'w') {
-            if (!this.maze.solverCurrentCell.leftWall) {
-                this.maze.solverCurrentCell = this.maze.cells[this.maze.solverCurrentCell.row][this.maze.solverCurrentCell.col - 1];
+            if (!this.currentCell.leftWall) {
+                this.currentCell = this.maze.cells[this.currentCell.row][this.currentCell.col - 1];
             }
         }
         this.lastDirection = this.direction;
         this.lastMoveTime = time;
+    }
+
+    this.render = function () {
+        if (this.currentCell) {
+            this.maze.ctx.beginPath();
+            this.maze.ctx.fillStyle = "#862e9c";
+            this.maze.ctx.arc(
+                this.currentCell.x + this.settings.cellSize / 2,
+                this.currentCell.y + this.settings.cellSize / 2,
+                this.settings.cellSize / 3,
+                0, Math.PI * 2, true);
+            this.maze.ctx.fill();
+        }
     }
 
 }

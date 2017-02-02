@@ -15,10 +15,7 @@ function Cell(maze, row, col) {
     this.y = this.row * this.width + 11; // leave gap for arrows
 
     this.render = function () {
-        if (this === this.maze.generatorCurrentCell || this === this.maze.solverCurrentCell) {
-            this.ctx.fillStyle = "#da77f2";
-        }
-        else if (this.visited) {
+        if (this.visited) {
             this.ctx.fillStyle = "#f8f9fa";
         }
         else {

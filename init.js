@@ -4,14 +4,12 @@
         this.height = 30;
         this.cellSize = window.innerWidth < 620 ? 10 : 20;
         this.speed = 5;
-        this.bias = 'h';
+        this.bias = '';
         this.Generate = undefined;
         this.maxSpeed = 11;
     }
     var Maze = function() {
         this.cells = [];
-        this.generatorCurrentCell = undefined;
-        this.solverCurrentCell = undefined;
         this.startCell = undefined;
         this.endCell = undefined;
         this.canvas = document.getElementById('canvas');
@@ -67,6 +65,8 @@
                 maze.cells[row][col].render();
             }
         }
+        generator.render();
+        solver.render();
     }
 
 })();
