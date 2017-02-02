@@ -10,19 +10,21 @@
     }
     var Maze = function() {
         this.cells = [];
-        this.currentCell = undefined;
+        this.generatorCurrentCell = undefined;
+        this.solverCurrentCell = undefined;
         this.startCell = undefined;
         this.endCell = undefined;
         this.canvas = document.getElementById('canvas');
         this.ctx = canvas.getContext('2d');
     }
 
-    var fpsLabel = document.getElementById('fpsLabel');
+    var statusLabel = document.getElementById('statusLabel');
     
     var settings = new Settings();
     settings.Generate = reset; // assign the generate button event handler
     var maze = new Maze();
     var generator = new Generator(settings, maze);
+    var solver = new Solver(settings, maze);
 
     function init() {
         var gui = new dat.GUI();
@@ -39,21 +41,22 @@
 
     function reset() {
         generator.reset();
+        solver.reset();
         update();
     }
 
 
     function update() {
         generator.update();
-        fpsLabel.innerText = Math.round(generator.fps) + " fps";
+        solver.update();
+        statusLabel.innerText = 'generating at ' + Math.round(generator.fps) + " fps";
         render();
 
-        if (generator.generating) {
-            requestAnimationFrame(update);
+        if (!generator.generating) {
+            statusLabel.innerText = 'done generating.  now solve!';
+            solver.activate();
         }
-        else {
-            fpsLabel.innerText = 'done';
-        }
+        requestAnimationFrame(update);
     }
 
     function render() {

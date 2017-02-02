@@ -22,7 +22,7 @@ function Generator(settings, maze) {
 
         this.maze.cells.length = 0;
         this.stack.length = 0;
-        this.maze.currentCell = this.maze.startCell = this.maze.endCell = undefined;
+        this.maze.generatorCurrentCell = this.maze.startCell = this.maze.endCell = undefined;
         for (var row = 0; row < rowCount; row++) {
             var rowArray = [];
             for (var col = 0; col < colCount; col++) {
@@ -50,18 +50,22 @@ function Generator(settings, maze) {
             }
         }
 
-        this.maze.startCell = this.maze.currentCell = this.maze.cells[0][Util.randomRangeInt(0, colCount - 1)];
-        this.maze.currentCell.visited = true;
+        this.maze.startCell = this.maze.generatorCurrentCell = this.maze.cells[0][Util.randomRangeInt(0, colCount - 1)];
+        this.maze.generatorCurrentCell.visited = true;
+        this.generating = true;
     }
 
     this.update = function() {
+        if (!this.generating) {
+            return;
+        }
         var time = +new Date;
         this.fps = 1000 / (time - this.oldtime)
         this.oldtime = time;
 
         if (this.settings.speed === this.settings.maxSpeed) {
             // max speed = disable animation
-            while (this.maze.currentCell) {
+            while (this.maze.generatorCurrentCell) {
                 this.processCurrentCell();
             }
         }
@@ -71,10 +75,7 @@ function Generator(settings, maze) {
                 this.processCurrentCell();
             }
         }
-        if (this.maze.currentCell) {
-            this.generating = true;
-        }
-        else {
+        if (!this.maze.generatorCurrentCell) {
             this.generating = false;
             this.selectEndCell();
         }
@@ -82,20 +83,20 @@ function Generator(settings, maze) {
 
 
     this.processCurrentCell = function() {
-        if (!this.maze.currentCell) {
+        if (!this.maze.generatorCurrentCell) {
             return;
         }
         var unvisitedNeighbors = [];
-        for (var i = 0; i < this.maze.currentCell.neighbors.length; i++) {
-            if (!this.maze.currentCell.neighbors[i].visited) {
-                unvisitedNeighbors.push(this.maze.currentCell.neighbors[i]);
+        for (var i = 0; i < this.maze.generatorCurrentCell.neighbors.length; i++) {
+            if (!this.maze.generatorCurrentCell.neighbors[i].visited) {
+                unvisitedNeighbors.push(this.maze.generatorCurrentCell.neighbors[i]);
             }
         }
         var biasedUnvisitedNeighbors = [];
         for (var i = 0; i < unvisitedNeighbors.length; i++) {
             if (
-                (this.settings.bias === 'h' && unvisitedNeighbors[i].row === this.maze.currentCell.row) ||
-                (this.settings.bias === 'v' && unvisitedNeighbors[i].col === this.maze.currentCell.col) ||
+                (this.settings.bias === 'h' && unvisitedNeighbors[i].row === this.maze.generatorCurrentCell.row) ||
+                (this.settings.bias === 'v' && unvisitedNeighbors[i].col === this.maze.generatorCurrentCell.col) ||
                 (this.settings.bias === '')
             ) {
                 biasedUnvisitedNeighbors.push(unvisitedNeighbors[i]);
@@ -114,34 +115,34 @@ function Generator(settings, maze) {
                 var chosenCell = unvisitedNeighbors[chosenIx];
             }
 
-            this.stack.push(this.maze.currentCell);
+            this.stack.push(this.maze.generatorCurrentCell);
 
             // remove wall between current and chosen
-            if (this.maze.currentCell.row < chosenCell.row) {
-                this.maze.currentCell.bottomWall = false;
+            if (this.maze.generatorCurrentCell.row < chosenCell.row) {
+                this.maze.generatorCurrentCell.bottomWall = false;
                 chosenCell.topWall = false;
             }
-            if (this.maze.currentCell.row > chosenCell.row) {
-                this.maze.currentCell.topWall = false;
+            if (this.maze.generatorCurrentCell.row > chosenCell.row) {
+                this.maze.generatorCurrentCell.topWall = false;
                 chosenCell.bottomWall = false;
             }
-            if (this.maze.currentCell.col < chosenCell.col) {
-                this.maze.currentCell.rightWall = false;
+            if (this.maze.generatorCurrentCell.col < chosenCell.col) {
+                this.maze.generatorCurrentCell.rightWall = false;
                 chosenCell.leftWall = false;
             }
-            if (this.maze.currentCell.col > chosenCell.col) {
-                this.maze.currentCell.leftWall = false;
+            if (this.maze.generatorCurrentCell.col > chosenCell.col) {
+                this.maze.generatorCurrentCell.leftWall = false;
                 chosenCell.rightWall = false;
             }
 
             chosenCell.visited = true;
-            this.maze.currentCell = chosenCell;
+            this.maze.generatorCurrentCell = chosenCell;
 
         }
         else {
             // Pop a cell from the stack
             // Make it the current cell
-            this.maze.currentCell = this.stack.pop();
+            this.maze.generatorCurrentCell = this.stack.pop();
         }
     }
     this.selectEndCell = function() {
