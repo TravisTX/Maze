@@ -1,6 +1,6 @@
-function Cell(canvas, ctx, row, col) {
-    this.canvas = canvas;
-    this.ctx = ctx;
+function Cell(maze, row, col) {
+    this.maze = maze;
+    this.ctx = this.maze.ctx;
     this.row = row;
     this.col = col;
     this.neighbors = [];
@@ -14,8 +14,8 @@ function Cell(canvas, ctx, row, col) {
     this.x = this.col * this.width + 1;
     this.y = this.row * this.width + 11; // leave gap for arrows
 
-    this.render = function (isCurrent, isStart, isEnd) {
-        if (isCurrent) {
+    this.render = function () {
+        if (this === this.maze.currentCell) {
             this.ctx.fillStyle = "#da77f2";
         }
         else if (this.visited) {
@@ -26,7 +26,7 @@ function Cell(canvas, ctx, row, col) {
         }
         this.ctx.fillRect(this.x, this.y, this.width, this.width);
 
-        if (isStart) {
+        if (this === this.maze.startCell) {
             this.ctx.fillStyle = "#37b24d";
             this.ctx.beginPath();
             this.ctx.moveTo(this.x + this.width / 2, this.y + this.width / 2 - 10);
@@ -34,7 +34,7 @@ function Cell(canvas, ctx, row, col) {
             this.ctx.lineTo(this.x + this.width - this.width / 5, this.y - 10);
             this.ctx.fill();
         }
-        if (isEnd) {
+        if (this === this.maze.endCell) {
             this.ctx.fillStyle = "#f03e3e";
             this.ctx.beginPath();
             this.ctx.moveTo(this.x + this.width / 2, this.y + this.width + 10);
@@ -43,8 +43,12 @@ function Cell(canvas, ctx, row, col) {
             this.ctx.fill();
         }
 
+        this.renderWalls();
+    }
+
+    this.renderWalls = function() {
         this.ctx.strokeStyle = '#343a40';
-        if (this.topWall && !isStart) {
+        if (this.topWall && this !== this.maze.startCell) {
             this.ctx.lineWidth = this.row === 0 ? 3 : 1;
             this.ctx.beginPath();
             this.ctx.moveTo(this.x, this.y);
@@ -58,7 +62,7 @@ function Cell(canvas, ctx, row, col) {
             this.ctx.lineTo(this.x + this.width, this.y + this.width);
             this.ctx.stroke();
         }
-        if (this.bottomWall && !isEnd) {
+        if (this.bottomWall && this !== this.maze.endCell) {
             this.ctx.lineWidth = this.row === window.settings.height - 1 ? 3 : 1;
             this.ctx.beginPath();
             this.ctx.moveTo(this.x, this.y + this.width);
