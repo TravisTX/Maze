@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <title>maze</title>
+    <style>
+    body {
+        background-color: #343a40;
+        color: #f8f9fa;
+        padding-top: 20px;
+    }
+    a {
+        color: #f8f9fa;
+    }
+    </style>
+</head>
+
+<body>
+    Maze Generator using the <a href="https://en.wikipedia.org/wiki/Maze_generation_algorithm#Recursive_backtracker">Recursive Backtracker maze generation algorithm</a><br>
+    Start = green |
+    End = red | 
+    <span id="fpsLabel"></span>
+    <br>
+    <canvas id="canvas"></canvas>
+
+    <script src="dat.gui.min.js"></script>
+    <script src="util.js"></script>
+    <script src="cell.js"></script>
+    <script src="init.js"></script>
+</body>
+
+</html>
