@@ -43,8 +43,8 @@
         colCount = settings.width;
         rowCount = settings.height;
 
-        canvas.width = settings.cellSize * colCount;
-        canvas.height = settings.cellSize * rowCount;
+        canvas.width = settings.cellSize * colCount + 2;
+        canvas.height = settings.cellSize * rowCount + 22;
 
         cells = [];
         stack = [];
@@ -76,7 +76,7 @@
             }
         }
 
-        startCell = currentCell = cells[Math.floor(rowCount / 2)][Math.floor(colCount / 2)];
+        startCell = currentCell = cells[0][Util.randomRangeInt(0, colCount - 1)];
         currentCell.visited = true;
 
         update();
@@ -116,7 +116,7 @@
     }
 
     function render() {
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = "#f8f9fa";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         for (var row = 0; row < cells.length; row++) {
             for (var col = 0; col < cells[row].length; col++) {
@@ -191,18 +191,6 @@
         }
     }
     function selectEndCell() {
-        var endCellWall = Util.randomRangeInt(0, 4);
-        if (endCellWall === 0) {
-            endCell = cells[0][Util.randomRangeInt(0, colCount - 1)];
-        }
-        if (endCellWall === 1) {
-            endCell = cells[Util.randomRangeInt(0, rowCount - 1)][0];
-        }
-        if (endCellWall === 2) {
-            endCell = cells[rowCount - 1][Util.randomRangeInt(0, colCount - 1)];
-        }
-        if (endCellWall === 3) {
-            endCell = cells[Util.randomRangeInt(0, rowCount - 1)][colCount - 1];
-        }
+        endCell = cells[rowCount - 1][Util.randomRangeInt(0, colCount - 1)];
     }
 })();

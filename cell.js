@@ -11,49 +11,62 @@ function Cell(canvas, ctx, row, col) {
     this.width = window.settings.cellSize;
     this.visited = false;
 
-    this.x = this.col * this.width;
-    this.y = this.row * this.width;
-
-    this.update = function () {
-    }
+    this.x = this.col * this.width + 1;
+    this.y = this.row * this.width + 11; // leave gap for arrows
 
     this.render = function (isCurrent, isStart, isEnd) {
-        this.ctx.fillStyle = "#495057";
-        if (this.visited) {
-            this.ctx.fillStyle = "#f8f9fa";
-        }
-        if (isStart) {
-            this.ctx.fillStyle = "#8ce99a";
-        }
-        if (isEnd) {
-            this.ctx.fillStyle = "#ffa8a8";
-        }
         if (isCurrent) {
             this.ctx.fillStyle = "#da77f2";
         }
+        else if (this.visited) {
+            this.ctx.fillStyle = "#f8f9fa";
+        }
+        else {
+            this.ctx.fillStyle = "#343a40";
+        }
         this.ctx.fillRect(this.x, this.y, this.width, this.width);
 
-        this.ctx.lineWidth = 2;
-        this.ctx.strokeStyle = '#495057';
-        if (this.topWall) {
+        if (isStart) {
+            this.ctx.fillStyle = "#37b24d";
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.x + this.width / 2, this.y + this.width / 2 - 10);
+            this.ctx.lineTo(this.x + this.width / 5, this.y - 10);
+            this.ctx.lineTo(this.x + this.width - this.width / 5, this.y - 10);
+            this.ctx.fill();
+        }
+        if (isEnd) {
+            this.ctx.fillStyle = "#f03e3e";
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.x + this.width / 2, this.y + this.width + 10);
+            this.ctx.lineTo(this.x + this.width / 5, this.y + this.width / 2 + 10);
+            this.ctx.lineTo(this.x + this.width - this.width / 5, this.y + this.width / 2 + 10);
+            this.ctx.fill();
+        }
+
+        this.ctx.strokeStyle = '#343a40';
+        if (this.topWall && !isStart) {
+            this.ctx.lineWidth = this.row === 0 ? 3 : 1;
             this.ctx.beginPath();
             this.ctx.moveTo(this.x, this.y);
             this.ctx.lineTo(this.x + this.width, this.y);
             this.ctx.stroke();
         }
         if (this.rightWall) {
+            this.ctx.lineWidth = this.col === window.settings.width - 1 ? 3 : 1;
             this.ctx.beginPath();
             this.ctx.moveTo(this.x + this.width, this.y);
             this.ctx.lineTo(this.x + this.width, this.y + this.width);
             this.ctx.stroke();
         }
-        if (this.bottomWall) {
+        if (this.bottomWall && !isEnd) {
+            this.ctx.lineWidth = this.row === window.settings.height - 1 ? 3 : 1;
             this.ctx.beginPath();
             this.ctx.moveTo(this.x, this.y + this.width);
             this.ctx.lineTo(this.x + this.width, this.y + this.width);
             this.ctx.stroke();
         }
         if (this.leftWall) {
+            this.ctx.lineWidth = this.col === 0 ? 3 : 1;
             this.ctx.beginPath();
             this.ctx.moveTo(this.x, this.y);
             this.ctx.lineTo(this.x, this.y + this.width);
