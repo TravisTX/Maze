@@ -11,6 +11,7 @@ function Solver(settings, maze) {
     this.repeateSpeed = 70;
     this.eventHandlers = [];
     this.currentCell = undefined;
+    this.path = [];
 
     this.activate = function () {
         if (this.isActive) {
@@ -31,6 +32,7 @@ function Solver(settings, maze) {
         this.isActive = false;
         this.currentCell = undefined;
         this.direction = '';
+        this.path.length = 0;
         this.removeEvents();
     }
 
@@ -135,9 +137,31 @@ function Solver(settings, maze) {
         }
         this.lastDirection = this.direction;
         this.lastMoveTime = time;
+        if (this.direction !== '') {
+            if (this.currentCell === this.path[this.path.length - 2]) {
+                this.path.pop();
+            }
+            else {
+                if (this.currentCell !== this.path[this.path.length - 1]) {
+                    this.path.push(this.currentCell);
+                }
+            }
+        }
     }
 
     this.render = function () {
+        if (this.path.length > 0) {
+            this.maze.ctx.strokeStyle = "#cc5de8";
+            this.maze.ctx.lineWidth = this.settings.cellSize - 8;
+            this.maze.ctx.beginPath();
+            this.maze.ctx.moveTo(this.maze.startCell.x + this.settings.cellSize / 2, this.maze.startCell.y + this.settings.cellSize / 2);
+            for (var i = 0; i < this.path.length; i++) {
+                var cell = this.path[i];
+                this.maze.ctx.lineTo(cell.x + this.settings.cellSize / 2, cell.y + this.settings.cellSize / 2);
+            }
+            this.maze.ctx.stroke();
+        }
+
         if (this.currentCell) {
             this.maze.ctx.beginPath();
             this.maze.ctx.fillStyle = "#862e9c";
