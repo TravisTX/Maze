@@ -14,6 +14,7 @@
         this.endCell = undefined;
         this.canvas = document.getElementById('canvas');
         this.ctx = canvas.getContext('2d');
+        this.mode = 'generate';
     }
 
     var statusLabel = document.getElementById('statusLabel');
@@ -22,7 +23,7 @@
     settings.Generate = reset; // assign the generate button event handler
     var maze = new Maze();
     var generator = new Generator(settings, maze);
-    var solver = new Solver(settings, maze);
+    var solver = new AutomaticSolver(settings, maze);
 
     function init() {
         var gui = new dat.GUI();
@@ -40,20 +41,35 @@
     function reset() {
         generator.reset();
         solver.reset();
+        settings.mode = 'generate';
         update();
     }
 
 
     function update() {
-        generator.update();
-        solver.update();
-        statusLabel.innerText = 'generating at ' + Math.round(generator.fps) + " fps";
-        render();
+        if (settings.mode === 'generate') {
+            generator.update();
+            statusLabel.innerText = 'generating at ' + Math.round(generator.fps) + " fps";
 
-        if (!generator.generating) {
-            statusLabel.innerText = 'done generating.  now solve!';
-            solver.activate();
+            if (!generator.isActive) {
+                settings.mode = 'solve';
+                solver.activate();
+            }
         }
+
+        if (settings.mode === 'solve') {
+            statusLabel.innerText = 'done generating.  now solve!';
+            solver.update();
+
+            if (!solver.isActive) {
+                settings.mode = 'done';
+            }
+        }
+
+        if (settings.mode === 'done') {
+            statusLabel.innerText = 'done!';
+        }
+        render();
         requestAnimationFrame(update);
     }
 

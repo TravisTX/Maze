@@ -5,7 +5,7 @@ function Generator(settings, maze) {
 
     // public output
     this.fps = 0;
-    this.generating = false;
+    this.isActive = false;
 
 
     // private
@@ -53,11 +53,11 @@ function Generator(settings, maze) {
 
         this.maze.startCell = this.currentCell = this.maze.cells[0][Util.randomRangeInt(0, colCount - 1)];
         this.currentCell.visited = true;
-        this.generating = true;
+        this.isActive = true;
     }
 
     this.update = function () {
-        if (!this.generating) {
+        if (!this.isActive) {
             return;
         }
         var time = +new Date;
@@ -77,7 +77,7 @@ function Generator(settings, maze) {
             }
         }
         if (!this.currentCell) {
-            this.generating = false;
+            this.isActive = false;
             this.selectEndCell();
         }
     }

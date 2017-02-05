@@ -1,4 +1,4 @@
-function Solver(settings, maze) {
+function ManualSolver(settings, maze) {
     // input
     this.settings = settings;
     this.maze = maze;
@@ -75,17 +75,14 @@ function Solver(settings, maze) {
                 this.direction = 's';
             }
         }
-        console.log('touch: ' + touchX + ' / ' + touchY + ' ' + this.direction);
     }
     this.touchEndHandler = function (event) {
         this.direction = '';
     }
     this.keyDownHandler = function (event) {
-        console.log('key down ' + this.isActive);
         if (!this.isActive) {
             return;
         }
-        console.log('up keyPressed: ' + event.keyCode);
 
         if (event.keyCode === 38) { // up
             this.direction = 'n';
